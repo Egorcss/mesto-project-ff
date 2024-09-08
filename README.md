@@ -1,2 +1,2 @@
-# Проектная работа Mesto
+git@github.com:Egorcss/mesto-project-ff.git
 
