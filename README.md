@@ -1,2 +1,2 @@
-git@github.com:Egorcss/mesto-project-ff.git
+https://github.com/Egorcss/mesto-project-ff.git
 
