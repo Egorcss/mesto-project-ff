@@ -2,20 +2,22 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Mesto</title>
   <link rel="stylesheet" href="./pages/index.css">
 </head>
 <body class="page">
+
 <div class="page__content">
+
   <header class="header page__section">
-    <img src="./images/logo.svg" alt="Логотип проекта масто" class="logo header__logo">
+    <img src="<%=require('./images/logo.svg')%>" alt="Логотип проекта масто" class="logo header__logo">
   </header>
+
   <main class="content">
     <section class="profile page__section">
-      <div class="profile__image" style="background-image: url('./images/avatar.jpg');"></div>
+      <div class="profile__image" style="background-image: url(<%=require('./images/avatar.jpg')%>)"></div>
       <div class="profile__info">
         <h1 class="profile__title">Жак-Ив Кусто</h1>
         <button class="profile__edit-button" type="button"></button>
@@ -28,11 +30,14 @@
       </ul>
     </section>
   </main>
+
   <footer class="footer page__section">
     <p class="footer__copyright">
       © 2021 Mesto Russia
     </p>
   </footer>
+
+  <!-- Попап с редактированием профиля -->
   <div class="popup popup_type_edit">
     <div class="popup__content">
       <button type="button" class="popup__close"></button>
@@ -44,6 +49,7 @@
       </form>
     </div>
   </div>
+  <!-- Попап с добавлением новой карточки на страницу -->
   <div class="popup popup_type_new-card">
     <div class="popup__content">
       <button type="button" class="popup__close"></button>
@@ -55,6 +61,7 @@
       </form>
     </div>
   </div>
+  <!-- Попап с увеличенной картинкой -->
   <div class="popup popup_type_image">
     <div class="popup__content popup__content_content_image">
       <button type="button" class="popup__close"></button>
@@ -62,10 +69,14 @@
       <p class="popup__caption"></p>
     </div>
   </div>
+  
 </div>
+
+<!-- СКРИПТЫ -->
 <script src="./scripts/cards.js"></script>
 <script src="./scripts/index.js" defer></script>
 
+<!-- ТЕМПЛЕЙТ -->
 <template id="card-template">
   <li class="places__item card">
     <img class="card__image" src="" alt="" />
@@ -77,5 +88,6 @@
     </div>
   </li>
 </template>
+
 </body>
 </html>
