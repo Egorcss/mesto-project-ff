@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Mesto</title>
-  <link rel="stylesheet" href="./pages/index.css">
 </head>
 <body class="page">
 
@@ -38,7 +37,7 @@
   </footer>
 
   <!-- Попап с редактированием профиля -->
-  <div class="popup popup_type_edit">
+  <div class="popup popup_type_edit popup_is-animated">
     <div class="popup__content">
       <button type="button" class="popup__close"></button>
       <h3 class="popup__title">Редактировать профиль</h3>
@@ -50,7 +49,7 @@
     </div>
   </div>
   <!-- Попап с добавлением новой карточки на страницу -->
-  <div class="popup popup_type_new-card">
+  <div class="popup popup_type_new-card popup_is-animated">
     <div class="popup__content">
       <button type="button" class="popup__close"></button>
       <h3 class="popup__title">Новое место</h3>
@@ -62,7 +61,7 @@
     </div>
   </div>
   <!-- Попап с увеличенной картинкой -->
-  <div class="popup popup_type_image">
+  <div class="popup popup_type_image popup_is-animated">
     <div class="popup__content popup__content_content_image">
       <button type="button" class="popup__close"></button>
       <img src="" alt="" class="popup__image">
@@ -72,9 +71,7 @@
   
 </div>
 
-<!-- СКРИПТЫ -->
-<script src="./scripts/cards.js"></script>
-<script src="./scripts/index.js" defer></script>
+
 
 <!-- ТЕМПЛЕЙТ -->
 <template id="card-template">

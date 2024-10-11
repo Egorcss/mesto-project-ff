@@ -15,3 +15,15 @@ export function closeModalByEsc(evt) {
         closeModal(document.querySelector('.popup_is-opened'));
     };
 };
+
+export function handleCloseModalByOverlay(everyPopup) {
+    // Перебираю каждый попап, если по клику на выбранный попап, у него имеется(contains) 
+    // класс popup_is-opened, то выбранный попап(evt.target) передается в функцию closeModal
+    everyPopup.forEach(popup => {
+        popup.addEventListener('click', (evt) => {
+            if (evt.target.classList.contains('popup_is-opened')) {
+                closeModal(evt.target);
+            };
+        });
+    });
+}

@@ -1,11 +1,11 @@
 // index.js
 import './pages/index.css'; // добавьте импорт главного файла стилей
 import { initialCards } from './scripts/cards.js';
-import { createCard, removeCardOnPage, addLikeCard} from './components/card.js';
-import { openModal, closeModal } from './components/modal.js';
+import { createCard, removeCardOnPage, toggleLikeCard} from './components/card.js';
+import { openModal, closeModal, handleCloseModalByOverlay } from './components/modal.js';
 
 // Сюда будут добавляться карточки
-const placesList = document.querySelector('.places__list');
+const cardsContainer = document.querySelector('.places__list');
 
 // @todo: Вывести карточки на страницу
 initialCards.forEach(function (card) {
@@ -13,8 +13,8 @@ initialCards.forEach(function (card) {
     // а в качестве 2 аругмента - функцию удаления, но она сработает только по клику
     // на кнопку "корзинка"(то же самое для 3 и 4 аргументов, сработают по клику), 
     // 3 аргумент - функция лайка для карточки, 4 аргумент - функция открытия большого изображения
-    const cardElement = createCard(card, removeCardOnPage, addLikeCard, openPopupBigImage);
-    placesList.append(cardElement);
+    const cardElement = createCard(card, removeCardOnPage, toggleLikeCard, openPopupBigImage);
+    cardsContainer.append(cardElement);
 });
 
 // @todo: Переменные для функции и ниже сама функция открытия большого изображения 
@@ -26,6 +26,7 @@ const popupBigImageDescription = document.querySelector('.popup__caption');
 function openPopupBigImage(card) {
     popupBigImagePicture.src = card.link;
     popupBigImageDescription.textContent = card.name;
+    popupBigImageDescription.alt = card.name;
 
     openModal(popupBigImage);
 };
@@ -38,34 +39,35 @@ function openPopupBigImage(card) {
 const buttonOpenProfile = document.querySelector('.profile__edit-button');
 const popupRedactionProfile = document.querySelector('.popup_type_edit');
 
-// Кнопка, по которой кликнув, открывается модальное окно с редактированием профиля
-buttonOpenProfile.addEventListener('click', function() {
-    openModal(popupRedactionProfile);
-});
-
 // ФОРМА РЕДАКТИРОВАНИЯ ПРОФИЛЯ
-
 const formProfile = document.forms['edit-profile']; // Форма с редактированием информации о человеке 
 const nameInputProfile = formProfile.elements.name; // инпут с плейсхолдером "имя"
 const jobInputProfile = formProfile.elements.description; // инпут с плейсхолдером "занятие" 
 
+const profileTitle = document.querySelector('.profile__title'); // заголовок профиля
+const profileDescription = document.querySelector('.profile__description'); // занятие в профиле
+
+// Кнопка, по которой кликнув, открывается модальное окно с редактированием профиля
+buttonOpenProfile.addEventListener('click', function() {
+    // Теперь даже при 1 открытии редактирования профиля, чтобы они не были пустыми, в поля инпутов 
+    // идут значения из заголовка и описания-занятия(в данном случае старые значения)
+    nameInputProfile.value = profileTitle.textContent;
+    jobInputProfile.value = profileDescription.textContent;
+
+    openModal(popupRedactionProfile);
+});
+
 // ФУНКЦИЯ РЕДАКТИРОВАНИЯ ПРОФИЛЯ
-function handleFormSubmit(evt) {
+function handleProfileFormSubmit(evt) {
     evt.preventDefault();
 
-    const name = nameInputProfile.value; // значение поля "имя"
-    const job = jobInputProfile.value; // значение поля "занятие"
-
-    const profileTitle = document.querySelector('.profile__title'); // заголовок профиля
-    const profileDescription = document.querySelector('.profile__description'); // занятие в профиле
-
-    profileTitle.textContent = name; // значение поля "имя" помещаю в текст заголовка профиля
-    profileDescription.textContent = job; // значение поля "занятие" помещаю в текст занятия в профиле
+    profileTitle.textContent = nameInputProfile.value; // А здесь уже в заголовок идет новый текст из инпута с плейсхолдером "Имя"
+    profileDescription.textContent = jobInputProfile.value; // То же самое, только здесь из инпута с плейсхолдером "Занятие"
 
     closeModal(popupRedactionProfile);
 }
 
-formProfile.addEventListener('submit', handleFormSubmit);
+formProfile.addEventListener('submit', handleProfileFormSubmit);
 
 // Все кнопки с классом pupop__close, каждая из них по клику закрывает любое модальное окно с этим классом
 const buttonCloseModalWindow = document.querySelectorAll('.popup__close');
@@ -77,23 +79,9 @@ buttonCloseModalWindow.forEach((button) => {
     });
 });
 
-// Работаю с каждым попапом
+// Работаю с каждым попапом и вызываю функцию закрытия любого попапа по клику на оверлей
 const everyPopup = document.querySelectorAll('.popup');
-
-// Перебираю каждый попап, если по клику на выбранный попап, у него имеется(contains) класс popup_is-opened,
-// то выбранный попап(по клику) передается в функцию closeModal
-everyPopup.forEach(popup => {
-    popup.addEventListener('click', (evt) => {
-        if (evt.target.classList.contains('popup_is-opened')) {
-            // Метод closest говорит: "дай мне ближайший класс, указаного в скобках". Этот метод позволяет выбрать 
-            // ближайший элемент-предок, который соответствует указанному селектору CSS(то есть .popup)
-            closeModal(evt.target.closest('.popup_is-opened'));
-        };
-    });
-    // Добавляю класс для всех попапов с приятной анимацией, благодаря использованию таких свойств, как
-    // transition, visibility, opacity
-    popup.classList.add('popup_is-animated');
-});
+handleCloseModalByOverlay(everyPopup);
 
 
 
@@ -113,8 +101,8 @@ const formAddCard = document.forms['new-place'];
 const titleInputAddCard = formAddCard.elements['place-name'];
 const linkInputAddCard = formAddCard.elements.link;
 
-// ФУНКЦИЯ ДОБАВЛЕНИЯ КАРТОЧКИ НА СТРАНИЦУ
-function addCardOnPage(evt) {
+// ФУНКЦИЯ-ОБРАБОТЧИК ДОБАВЛЕНИЯ КАРТОЧКИ НА СТРАНИЦУ
+function handleAddCardOnPage(evt) {
     evt.preventDefault();
 
     // Заголовок и ссылка для новой карточки
@@ -128,15 +116,15 @@ function addCardOnPage(evt) {
         link: linkForCard
     };    
 
-    const addNewCard = createCard(newCard, removeCardOnPage, addLikeCard, openPopupBigImage);
+    const addNewCard = createCard(newCard, removeCardOnPage, toggleLikeCard, openPopupBigImage);
 
     // Добавляю новую карточку в начало списка карточек(append добавил бы в конец)
-    placesList.prepend(addNewCard);
+    cardsContainer.prepend(addNewCard);
 
     // Закрываю после добавления карточки на страницу модальное окно и очищаю форму методом reset
     closeModal(popupAddNewCard);
     formAddCard.reset();
 };
 
-formAddCard.addEventListener('submit', addCardOnPage);
+formAddCard.addEventListener('submit', handleAddCardOnPage);
 
