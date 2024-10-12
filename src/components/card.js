@@ -3,14 +3,17 @@ const cardTemplate = document.querySelector('#card-template').content;
 
 // @todo: Функция создания карточки
 export function createCard(card, deleteCard, likeCard, handleImageClick) {
-    // В CardTemplate определен контент темлейта, теперь клонируем его содержимое 
+    // В CardTemplate определен контент темлейта, теперь клонируем его содержимое и выбираем
+    // селекторы с картинкой и заголовком карточки
     const newCard = cardTemplate.querySelector('.places__item').cloneNode(true);
+    const newCardImage = newCard.querySelector('.card__image');
+    const newCardTitle = newCard.querySelector('.card__title');
 
-    // В 1 аргументе Card будет элемент массива initialCards и через этот аргумент работаем 
-    // со свойствами(link и name)
-    newCard.querySelector('.card__image').src = card.link;
-    newCard.querySelector('.card__title').textContent = card.name;
-    newCard.querySelector('.card__title').alt = card.name;
+    // В 1 аргументе card будет элемент массива initialCards и через этот аргумент работаем 
+    // со его свойствами(link и name)
+    newCardImage.src = card.link
+    newCardTitle.textContent = card.name;
+    newCardTitle.alt = card.name;
     
     // Кнопка "корзинка", по клику передается аргумент DeleteCard ей, переданный в функцию ранее
     const buttonDelete = newCard.querySelector('.card__delete-button');
@@ -25,7 +28,7 @@ export function createCard(card, deleteCard, likeCard, handleImageClick) {
     });
 
     // Открытие большого изображения через клик по картинке в карточке
-    newCard.querySelector('.card__image').addEventListener('click', () => {
+    newCardImage.addEventListener('click', () => {
         handleImageClick(card);
     });
 

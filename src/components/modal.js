@@ -16,7 +16,7 @@ export function closeModalByEsc(evt) {
     };
 };
 
-export function handleCloseModalByOverlay(everyPopup) {
+export function setCloseModalByOverlayClickListeners(everyPopup) {
     // Перебираю каждый попап, если по клику на выбранный попап, у него имеется(contains) 
     // класс popup_is-opened, то выбранный попап(evt.target) передается в функцию closeModal
     everyPopup.forEach(popup => {

@@ -2,7 +2,7 @@
 import './pages/index.css'; // добавьте импорт главного файла стилей
 import { initialCards } from './scripts/cards.js';
 import { createCard, removeCardOnPage, toggleLikeCard} from './components/card.js';
-import { openModal, closeModal, handleCloseModalByOverlay } from './components/modal.js';
+import { openModal, closeModal, setCloseModalByOverlayClickListeners } from './components/modal.js';
 
 // Сюда будут добавляться карточки
 const cardsContainer = document.querySelector('.places__list');
@@ -81,7 +81,7 @@ buttonCloseModalWindow.forEach((button) => {
 
 // Работаю с каждым попапом и вызываю функцию закрытия любого попапа по клику на оверлей
 const everyPopup = document.querySelectorAll('.popup');
-handleCloseModalByOverlay(everyPopup);
+setCloseModalByOverlayClickListeners(everyPopup);
 
 
 
