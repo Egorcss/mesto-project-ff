@@ -21,7 +21,7 @@ export function createCard(card, deleteCard, likeCard, handleImageClick) {
         deleteCard(newCard);
     });
 
-    // Лайк для карточки
+    // Переключение лайка для карточки
     const buttonLikeCard = newCard.querySelector('.card__like-button');
     buttonLikeCard.addEventListener('click', () => {
         likeCard(buttonLikeCard);
@@ -40,7 +40,7 @@ export function removeCardOnPage(cardElement) {
     cardElement.remove();
 };
 
-// @todo: Функция лайка карточки 
+// @todo: Функция переключения лайка карточки 
 export function toggleLikeCard(likeButton) {
     likeButton.classList.toggle('card__like-button_is-active');
 };
