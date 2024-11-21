@@ -3,6 +3,23 @@ import './pages/index.css'; // добавьте импорт главного ф
 import { initialCards } from './scripts/cards.js';
 import { createCard, removeCardOnPage, toggleLikeCard} from './components/card.js';
 import { openModal, closeModal, setCloseModalByOverlayClickListeners } from './components/modal.js';
+import { enableValidation, clearValidation } from './components/validation.js';
+
+// Все кнопки с классом pupop__close, каждая из них по клику закрывает любое модальное окно с этим классом
+const buttonCloseModalWindow = document.querySelectorAll('.popup__close');
+
+buttonCloseModalWindow.forEach((button) => {
+    const popup = button.closest('.popup');
+    button.addEventListener('click', () => {
+        closeModal(popup);
+    });
+});
+
+// Работаю с каждым попапом и вызываю функцию закрытия любого попапа по клику на оверлей
+const everyPopup = document.querySelectorAll('.popup');
+setCloseModalByOverlayClickListeners(everyPopup);
+
+
 
 // Сюда будут добавляться карточки
 const cardsContainer = document.querySelector('.places__list');
@@ -69,20 +86,6 @@ function handleProfileFormSubmit(evt) {
 
 formProfile.addEventListener('submit', handleProfileFormSubmit);
 
-// Все кнопки с классом pupop__close, каждая из них по клику закрывает любое модальное окно с этим классом
-const buttonCloseModalWindow = document.querySelectorAll('.popup__close');
-
-buttonCloseModalWindow.forEach((button) => {
-    const popup = button.closest('.popup');
-    button.addEventListener('click', () => {
-        closeModal(popup);
-    });
-});
-
-// Работаю с каждым попапом и вызываю функцию закрытия любого попапа по клику на оверлей
-const everyPopup = document.querySelectorAll('.popup');
-setCloseModalByOverlayClickListeners(everyPopup);
-
 
 
 // МОДАЛЬНОЕ ОКНО ДОБАВЛЕНИЯ КАРТОЧКИ НА СТРАНИЦУ
@@ -127,4 +130,21 @@ function handleAddCardOnPage(evt) {
 };
 
 formAddCard.addEventListener('submit', handleAddCardOnPage);
+
+
+
+// 7 ПРОЕКТ - ВАЛИДАЦИЯ ФОРМ, API, ДЕПЛОЙ
+
+// В эту переменную для удобства записываю объект со свойствами(у каждого свой селектор из попапа)
+// и передаю переменную в функцию ниже
+const validationConfig = {
+    formSelector: '.popup__form', // форма каждого попапа
+    inputSelector: '.popup__input', // каждый инпут формы
+    submitButtonSelector: '.popup__button', // Кнопка-сабмит "Сохранить"
+    inactiveButtonClass: 'popup__button_disabled', // неактивная кнопка
+    inputErrorClass: 'popup__input_type_error', // текст ошибки
+    errorClass: 'popup__error_visible' // показ текста ошибки
+};
+
+enableValidation(validationConfig);
 
