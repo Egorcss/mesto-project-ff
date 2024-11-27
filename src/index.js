@@ -1,18 +1,42 @@
 // index.js
 import './pages/index.css'; // добавьте импорт главного файла стилей
-import { initialCards } from './scripts/cards.js';
+
 import { createCard, removeCardOnPage, toggleLikeCard} from './components/card.js';
+
 import { openModal, closeModal, setCloseModalByOverlayClickListeners } from './components/modal.js';
+// import { enableValidation, clearValidation } from './components/validation.js';
+import { 
+    getMyPersonalInfo, 
+    redactionMyProfileAvatar, 
+    redactionMyProfileInputs,
+    getInitialCards,
+    addCardOnServer,
+    cardLike,
+    cardUnlike,
+    cardDelete
+} from './components/api.js';
+
+// Все кнопки с классом pupop__close, каждая из них по клику закрывает любое модальное окно с этим классом
+const buttonCloseModalWindow = document.querySelectorAll('.popup__close');
+
+buttonCloseModalWindow.forEach((button) => {
+    const popup = button.closest('.popup');
+    button.addEventListener('click', () => {
+        closeModal(popup);
+    });
+});
+
+// Работаю с каждым попапом и вызываю функцию закрытия любого попапа по клику на оверлей
+const everyPopup = document.querySelectorAll('.popup');
+setCloseModalByOverlayClickListeners(everyPopup);
+
+
 
 // Сюда будут добавляться карточки
 const cardsContainer = document.querySelector('.places__list');
 
 // @todo: Вывести карточки на страницу
 initialCards.forEach(function (card) {
-    // Из массива initialCards передаю в качестве 1 аргумента каждый элемент массива(card), 
-    // а в качестве 2 аругмента - функцию удаления, но она сработает только по клику
-    // на кнопку "корзинка"(то же самое для 3 и 4 аргументов, сработают по клику), 
-    // 3 аргумент - функция лайка для карточки, 4 аргумент - функция открытия большого изображения
     const cardElement = createCard(card, removeCardOnPage, toggleLikeCard, openPopupBigImage);
     cardsContainer.append(cardElement);
 });
@@ -55,6 +79,7 @@ buttonOpenProfile.addEventListener('click', function() {
     jobInputProfile.value = profileDescription.textContent;
 
     openModal(popupRedactionProfile);
+    // clearValidation(popupRedactionProfile, validationConfig);
 });
 
 // ФУНКЦИЯ РЕДАКТИРОВАНИЯ ПРОФИЛЯ
@@ -65,23 +90,10 @@ function handleProfileFormSubmit(evt) {
     profileDescription.textContent = jobInputProfile.value; // То же самое, только здесь из инпута с плейсхолдером "Занятие"
 
     closeModal(popupRedactionProfile);
+    formProfile.reset();
 }
 
 formProfile.addEventListener('submit', handleProfileFormSubmit);
-
-// Все кнопки с классом pupop__close, каждая из них по клику закрывает любое модальное окно с этим классом
-const buttonCloseModalWindow = document.querySelectorAll('.popup__close');
-
-buttonCloseModalWindow.forEach((button) => {
-    const popup = button.closest('.popup');
-    button.addEventListener('click', () => {
-        closeModal(popup);
-    });
-});
-
-// Работаю с каждым попапом и вызываю функцию закрытия любого попапа по клику на оверлей
-const everyPopup = document.querySelectorAll('.popup');
-setCloseModalByOverlayClickListeners(everyPopup);
 
 
 
@@ -92,7 +104,8 @@ const buttonAddNewCard = document.querySelector('.profile__add-button');
 const popupAddNewCard = document.querySelector('.popup_type_new-card');
 
 buttonAddNewCard.addEventListener('click', function() {
-    openModal(popupAddNewCard)
+    openModal(popupAddNewCard);
+    // clearValidation(popupAddNewCard, validationConfig);
 });
 
 // ФОРМА ДОБАВЛЕНИЯ НОВОЙ КАРТОЧКИ НА СТРАНИЦУ, А ТАКЖЕ ИНПУТЫ С ПЛЕЙСХОЛДЕРАМИ "НАЗВАНИЕ" И "ССЫЛКА НА КАРТИНКУ"
@@ -128,3 +141,45 @@ function handleAddCardOnPage(evt) {
 
 formAddCard.addEventListener('submit', handleAddCardOnPage);
 
+
+
+// 7 ПРОЕКТ - ВАЛИДАЦИЯ ФОРМ, API, ДЕПЛОЙ
+
+// В эту переменную для удобства записываю объект со свойствами(у каждого свой селектор из попапа)
+// и передаю переменную в функцию ниже
+// const validationConfig = {
+//     formSelector: '.popup__form',
+//     inputSelector: '.popup__input',
+//     submitButtonSelector: '.popup__button',
+//     inactiveButtonClass: 'popup__button_disabled',
+//     inputErrorClass: 'popup__input_type_error',
+//     errorClass: 'popup__error_visible'
+// };
+
+// enableValidation(validationConfig);
+
+fetch('https://nomoreparties.co/v1/wff-cohort-24/cards', {
+    headers: {
+      authorization: 'cdb5081b-c336-4c35-b8c0-6ade77d95de3'
+    }
+  })
+    .then(res => res.json())
+    .then((result) => {
+      console.log(result);
+    });
+
+fetch('https://nomoreparties.co/v1/wff-cohort-24/users/me', {
+    method: 'PATCH',
+    headers: {
+        authorization: 'cdb5081b-c336-4c35-b8c0-6ade77d95de3',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        name: 'bbb',
+        about: 'aaa'
+    })
+    })
+    .then(res => res.json())
+    .then((result) => {
+      console.log(result);
+    });     

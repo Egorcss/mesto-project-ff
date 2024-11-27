@@ -15,6 +15,7 @@
   </header>
 
   <main class="content">
+
     <section class="profile page__section">
       <div class="profile__image" style="background-image: url(<%=require('./images/avatar.jpg')%>)"></div>
       <div class="profile__info">
@@ -24,10 +25,12 @@
       </div>
       <button class="profile__add-button" type="button"></button>
     </section>
+    
     <section class="places page__section">
       <ul class="places__list">
       </ul>
     </section>
+    
   </main>
 
   <footer class="footer page__section">
@@ -42,24 +45,77 @@
       <button type="button" class="popup__close"></button>
       <h3 class="popup__title">Редактировать профиль</h3>
       <form class="popup__form" name="edit-profile">
-        <input type="text" name="name" class="popup__input popup__input_type_name" placeholder="Имя" required>
-        <input type="text" name="description" class="popup__input popup__input_type_description" placeholder="Занятие" required>
+        <!-- Обязательно к заполнению, минимум 2 символа, максимум 40, шаблон патерна: начало строки(^), 
+        один или несколько символов из указанного диапазона, символы дефиса (-) и пробела (\s), конец строки ($).
+        То есть не получится ввести в поле к примеру такое: "/*+100500" -->
+        <input 
+          type="text" 
+          name="name" 
+          class="popup__input popup__input_type_name" 
+          placeholder="Имя" 
+          required
+          minlength="2"
+          maxlength="40"
+          pattern="^[А-Яа-яЁёA-Za-z\-\s]+$"
+          data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
+          id="profile-name-input"
+        >
+        <span class="popup__error profile-name-input-error"></span>
+
+        <input 
+          type="text" 
+          name="description" 
+          class="popup__input popup__input_type_description" 
+          placeholder="Занятие" 
+          required
+          minlength="2"
+          maxlength="200"
+          pattern="^[А-Яа-яЁёA-Za-z\s\-]+$"
+          data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
+          id="profile-job-input"
+        >
+        <span class="popup__error profile-job-input-error"></span>
+
         <button type="submit" class="button popup__button">Сохранить</button>
       </form>
     </div>
   </div>
+
   <!-- Попап с добавлением новой карточки на страницу -->
   <div class="popup popup_type_new-card popup_is-animated">
     <div class="popup__content">
       <button type="button" class="popup__close"></button>
       <h3 class="popup__title">Новое место</h3>
       <form class="popup__form" name="new-place">
-        <input type="text" name="place-name" class="popup__input popup__input_type_card-name" placeholder="Название" required>
-        <input type="url" name="link" class="popup__input popup__input_type_url" placeholder="Ссылка на картинку" required>
+        <input 
+          type="text" 
+          name="place-name" 
+          class="popup__input popup__input_type_card-name" 
+          placeholder="Название"
+          required
+          minlength="2"
+          maxlength="30"
+          pattern="^[А-Яа-яЁёA-Za-z\s\-]+$"
+          data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
+          id="card-add-name-input"
+        >
+        <span class="popup__error card-add-name-input-error"></span>
+
+        <input 
+          type="url" 
+          name="link"
+          class="popup__input popup__input_type_url" 
+          placeholder="Ссылка на картинку" 
+          required
+          id="card-add-link-input"
+        >
+        <span class="popup__error card-add-link-input-error"></span>
+
         <button type="submit" class="button popup__button">Сохранить</button>
       </form>
     </div>
   </div>
+
   <!-- Попап с увеличенной картинкой -->
   <div class="popup popup_type_image popup_is-animated">
     <div class="popup__content popup__content_content_image">
@@ -71,6 +127,25 @@
   
 </div>
 
+<div class="popup popup_type_avatar">
+  <div class="popup__content">
+    <button type="button" class="popup__close"></button>
+    <h3 class="popup__title">Обновить аватар</h3>
+    <form class="popup__form" name="avatar-image">
+      <input 
+        type="url" 
+        name="avatar-image"
+        class="popup__input popup__input_type_url-avatar" 
+        placeholder="Ссылка на картинку" 
+        required
+        id="url-avatar" 
+      >
+      <span class="popup__error url-avatar-error"></span> 
+      <button type="submit" class="button popup__button">Сохранить</button>
+    </form>
+  </div>
+</div>
+
 
 
 <!-- ТЕМПЛЕЙТ -->
@@ -79,9 +154,13 @@
     <img class="card__image" src="" alt="" />
     <button type="button" class="card__delete-button"></button>
     <div class="card__description">
-      <h2 class="card__title">
-      </h2>
-      <button type="button" class="card__like-button"></button>
+      <h2 class="card__title"></h2>
+      <div class="card__like-wrapper">
+        <button type="button" class="card__like-button"></button> 
+        <span
+          class="card__like-counter">
+        </span>
+      </div>
     </div>
   </li>
 </template>
