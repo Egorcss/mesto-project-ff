@@ -99,7 +99,7 @@ Promise.all([getMyProfileInformation(), getInitialCards()])
         }) 
     })
     .catch(error => {
-        console.log(error.status, error.statusText)
+        console.log(error.status, error.statusText) // на случай ошибки
     });
 
 
