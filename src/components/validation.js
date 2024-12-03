@@ -1,4 +1,3 @@
-// Функция показа ошибки
 const showInputError = (formElement, inputElement, validationConfig) => {
  
     inputElement.classList.add(validationConfig.inputErrorClass); // текст ошибки
@@ -8,7 +7,6 @@ const showInputError = (formElement, inputElement, validationConfig) => {
     errorElement.textContent = inputElement.validationMessage;
 };
   
-// Функция скрытия ошибки
 const hideInputError = (formElement, inputElement, validationConfig) => {
 
     inputElement.classList.remove(validationConfig.inputErrorClass);
@@ -18,27 +16,20 @@ const hideInputError = (formElement, inputElement, validationConfig) => {
     errorElement.textContent = '';
 };
   
-// Функция проверки валидности данных
 const checkInputValidity = (formElement, inputElement, validationConfig) => {
-
-    // Если НЕВАЛИДНО, то идет вызов фунции ПОКАЗАТЬ ОШИБКИ
     if (!inputElement.validity.valid) {
       showInputError(formElement, inputElement, validationConfig);
     } 
-    // Если ВАЛИДНО, то наоборот, идет вызов функции СПРЯТАТЬ ОШИБКИ
     else {
       hideInputError(formElement, inputElement, validationConfig);
     }
 
-    // Показ кастомной ошибки через ключевые слова patternMismatch, dataset, errorMessage(значение data-error-message из файла index.html)
     if (inputElement.validity.patternMismatch) {
       inputElement.setCustomValidity(inputElement.dataset.errorMessage);
     } 
-    // Иначе ничего
     else {
-      inputElement.setCustomValidity('');
+      inputElement.setCustomValidity("");
     }
-
 };
   
 const setEventListeners = (formElement, validationConfig) => {
@@ -62,15 +53,8 @@ const setEventListeners = (formElement, validationConfig) => {
   
 };
   
-// Ищем хотя бы одно невалидное
-const hasInvalidInput = (inputList) => {
-    return inputList.some((inputElement) => {
-      return !inputElement.validity.valid;
-    });
-};
-  
 // Функция переключения статуса кнопки(Валидна-Невалидна)
-                        // здесь передаю массив всех инпутов, кнопку сабмит и объект со свойствами  
+// здесь передаю массив всех инпутов, кнопку сабмит и объект со свойствами  
 const toggleButtonStatus = (inputList, buttonSaveSubmit, validationConfig) => {
     // Если хотя бы 1 поле НЕВАЛИДНО, блокирую кнопку и добавляю стили к ошибке, соответсвенно в else наоборот
     if (hasInvalidInput(inputList)) {
@@ -81,6 +65,13 @@ const toggleButtonStatus = (inputList, buttonSaveSubmit, validationConfig) => {
       buttonSaveSubmit.classList.remove(validationConfig.inactiveButtonClass);
       buttonSaveSubmit.setAttribute("disabled", "false");
     }
+};
+
+// Ищем хотя бы одно невалидное
+const hasInvalidInput = (inputList) => {
+  return inputList.some((inputElement) => {
+    return !inputElement.validity.valid;
+  });
 };
   
 export const enableValidation = (validationConfig) => {
@@ -97,4 +88,17 @@ export const enableValidation = (validationConfig) => {
 
 };
   
+export const clearValidation = (formElement, validationConfig) => {
+
+  const buttonSaveSubmit = formElement.querySelector(validationConfig.submitButtonSelector);
+  const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
+
+  inputList.forEach((inputElement) => {
+    inputElement.setCustomValidity("");
+    hideInputError(formElement, inputElement, validationConfig);
+  });
   
+  toggleButtonStatus(inputList, buttonSaveSubmit, validationConfig);
+
+};  
+

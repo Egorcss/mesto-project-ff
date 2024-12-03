@@ -1,9 +1,22 @@
 // index.js
 import './pages/index.css'; // добавьте импорт главного файла стилей
-import { initialCards } from './scripts/cards.js';
+
 import { createCard, removeCardOnPage, toggleLikeCard} from './components/card.js';
+
 import { openModal, closeModal, setCloseModalByOverlayClickListeners } from './components/modal.js';
+
 import { enableValidation, clearValidation } from './components/validation.js';
+
+import { 
+    editUserAvatar,
+    getUserInfo, 
+    updateUserInfo, 
+    getInitialCards, 
+    addCard, 
+    deleteCard, 
+    likeCard, 
+    unLikeCard 
+} from './components/api.js';
 
 // Все кнопки с классом pupop__close, каждая из них по клику закрывает любое модальное окно с этим классом
 const buttonCloseModalWindow = document.querySelectorAll('.popup__close');
@@ -19,20 +32,8 @@ buttonCloseModalWindow.forEach((button) => {
 const everyPopup = document.querySelectorAll('.popup');
 setCloseModalByOverlayClickListeners(everyPopup);
 
-
-
 // Сюда будут добавляться карточки
 const cardsContainer = document.querySelector('.places__list');
-
-// @todo: Вывести карточки на страницу
-initialCards.forEach(function (card) {
-    // Из массива initialCards передаю в качестве 1 аргумента каждый элемент массива(card), 
-    // а в качестве 2 аругмента - функцию удаления, но она сработает только по клику
-    // на кнопку "корзинка"(то же самое для 3 и 4 аргументов, сработают по клику), 
-    // 3 аргумент - функция лайка для карточки, 4 аргумент - функция открытия большого изображения
-    const cardElement = createCard(card, removeCardOnPage, toggleLikeCard, openPopupBigImage);
-    cardsContainer.append(cardElement);
-});
 
 // @todo: Переменные для функции и ниже сама функция открытия большого изображения 
 // для комфортного просмотра
@@ -40,10 +41,10 @@ const popupBigImage = document.querySelector('.popup_type_image');
 const popupBigImagePicture = document.querySelector('.popup__image')
 const popupBigImageDescription = document.querySelector('.popup__caption');
 
-function openPopupBigImage(card) {
-    popupBigImagePicture.src = card.link;
-    popupBigImageDescription.textContent = card.name;
-    popupBigImageDescription.alt = card.name;
+function openPopupBigImage(title, link) {
+    popupBigImagePicture.src = link;
+    popupBigImageDescription.textContent = title;
+    popupBigImageDescription.alt = title;
 
     openModal(popupBigImage);
 };
@@ -72,16 +73,24 @@ buttonOpenProfile.addEventListener('click', function() {
     jobInputProfile.value = profileDescription.textContent;
 
     openModal(popupRedactionProfile);
+    clearValidation(popupRedactionProfile, validationConfig);
 });
 
 // ФУНКЦИЯ РЕДАКТИРОВАНИЯ ПРОФИЛЯ
 function handleProfileFormSubmit(evt) {
     evt.preventDefault();
 
-    profileTitle.textContent = nameInputProfile.value; // А здесь уже в заголовок идет новый текст из инпута с плейсхолдером "Имя"
-    profileDescription.textContent = jobInputProfile.value; // То же самое, только здесь из инпута с плейсхолдером "Занятие"
+    updateUserInfo(nameInputProfile.value, jobInputProfile.value)
+    .then(data => {
+        profileTitle.textContent = data.name;
+        profileDescription.textContent = data.about;
+    })
+    .catch(error => {
+        console.log('There was some error, please verify //', error)
+    })
 
     closeModal(popupRedactionProfile);
+    // formProfile.reset();
 }
 
 formProfile.addEventListener('submit', handleProfileFormSubmit);
@@ -95,7 +104,9 @@ const buttonAddNewCard = document.querySelector('.profile__add-button');
 const popupAddNewCard = document.querySelector('.popup_type_new-card');
 
 buttonAddNewCard.addEventListener('click', function() {
-    openModal(popupAddNewCard)
+    openModal(popupAddNewCard);
+    formAddCard.reset();
+    clearValidation(popupAddNewCard, validationConfig);
 });
 
 // ФОРМА ДОБАВЛЕНИЯ НОВОЙ КАРТОЧКИ НА СТРАНИЦУ, А ТАКЖЕ ИНПУТЫ С ПЛЕЙСХОЛДЕРАМИ "НАЗВАНИЕ" И "ССЫЛКА НА КАРТИНКУ"
@@ -119,14 +130,31 @@ function handleAddCardOnPage(evt) {
         link: linkForCard
     };    
 
-    const addNewCard = createCard(newCard, removeCardOnPage, toggleLikeCard, openPopupBigImage);
+    addCard(newCard.name, newCard.link)
+    .then((data) => {
 
-    // Добавляю новую карточку в начало списка карточек(append добавил бы в конец)
-    cardsContainer.prepend(addNewCard);
-
-    // Закрываю после добавления карточки на страницу модальное окно и очищаю форму методом reset
-    closeModal(popupAddNewCard);
-    formAddCard.reset();
+        const cardId = data._id;
+        cardsContainer.prepend(createCard(
+          newCard.name,
+          newCard.link,
+          deleteCard,
+          openPopupBigImage,
+          data.likes,
+          profileId,
+          data.owner._id,
+          cardId,
+          likeCard,
+          unLikeCard,
+          removeCardOnPage,
+          toggleLikeCard
+        ));
+    })
+    .catch((error) => {
+        console.log('There was some error, please verify //', error);
+    })
+    
+    closeModal(popupAddNewCard); // Закрываю после добавления карточки на страницу модальное окно и очищаю форму методом reset
+    // formAddCard.reset();
 };
 
 formAddCard.addEventListener('submit', handleAddCardOnPage);
@@ -138,13 +166,74 @@ formAddCard.addEventListener('submit', handleAddCardOnPage);
 // В эту переменную для удобства записываю объект со свойствами(у каждого свой селектор из попапа)
 // и передаю переменную в функцию ниже
 const validationConfig = {
-    formSelector: '.popup__form', // форма каждого попапа
-    inputSelector: '.popup__input', // каждый инпут формы
-    submitButtonSelector: '.popup__button', // Кнопка-сабмит "Сохранить"
-    inactiveButtonClass: 'popup__button_disabled', // неактивная кнопка
-    inputErrorClass: 'popup__input_type_error', // текст ошибки
-    errorClass: 'popup__error_visible' // показ текста ошибки
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_disabled',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__error_visible'
 };
 
 enableValidation(validationConfig);
+
+// Картинка профиля
+const formElementEditAvatar = document.querySelector('.popup__form[name="edit-avatar"]'); // +
+// Инпут с ссылкой на новый аватар
+const newAvatarPicture = formElementEditAvatar.querySelector('.popup__input_type_url-avatar');
+// Форма с аватаркой  
+const profileEditAvatarButton = document.querySelector('.profile__image'); // +
+// Сам попап аватара
+const popUpEditAvatar = document.querySelector('.popup_type_avatar');
+
+let profileId;
+
+Promise.all([getUserInfo(), getInitialCards()]).then(([userInfo, cards]) => {
+    
+    profileTitle.textContent = userInfo.name;
+    profileDescription.textContent = userInfo.about;
+    profileEditAvatarButton.style = `background-image: url(${userInfo.avatar})`;
+    profileId = userInfo._id;
+
+    cards.forEach(card => {
+        const cardContent = createCard(
+        card.name, 
+        card.link, 
+        deleteCard, 
+        openPopupBigImage,
+        card.likes,
+        profileId,
+        card.owner._id,
+        card._id,
+        likeCard,
+        unLikeCard,
+        removeCardOnPage,
+        toggleLikeCard  
+        )
+
+    cardsContainer.append(cardContent)
+    }) 
+});
+
+profileEditAvatarButton.addEventListener('click', () => {
+    formElementEditAvatar.reset();
+    clearValidation(popUpEditAvatar, validationConfig);
+    openModal(popUpEditAvatar);
+});
+
+// Форма с аватаром
+formElementEditAvatar.addEventListener('submit', handleEditAvatarFormSubmit);
+
+function handleEditAvatarFormSubmit(evt) {
+    evt.preventDefault();
+
+    editUserAvatar(newAvatarPicture.value)
+    .then(data => {
+        profileEditAvatarButton.style = `background-image: url(${data.avatar})`
+    })
+    .catch(error => {
+        console.log('There was some error, please verify //', error)
+    })
+
+    closeModal(popUpEditAvatar)
+}
 
