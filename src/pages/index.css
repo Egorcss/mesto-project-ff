@@ -10,5 +10,5 @@
 @import url('../blocks/popup/popup.css');
 @import url('../blocks/popup/_is-animated/popup_is-animated.css');
 @import url('../blocks/popup/_is-opened/popup_is-opened.css');
-/* добавил импорт файла, где в коде прописано как будет появляться ошибка под любым инпутом */
+/* файл, где в коде прописаны стили ошибкок для инпутов */
 @import url('../blocks/popup/popup-error.css');

@@ -9,8 +9,9 @@ const config = {
     }
 };
 
-// Универсальная функция чтобы вместо кучи писанины сразу вызывать функцию получения
-// результата с сервера и ее преображение в формат json(и возвращение через return)
+// Универсальная функция - вместо кучи писанины вызываем функцию получения
+// результата с сервера. Если все хорошо, то преображаем в формат json(и возвращаем),
+// а также отклоняем если все плохо(reject)
 function AnswerFromServer(res) {
     if (res.ok) {
         return res.json();
@@ -18,31 +19,20 @@ function AnswerFromServer(res) {
     return Promise.reject(res.status, res.statusText);
 };
 
-export const getMyPersonalInfo = () => {
+
+
+// ФЕТЧИ
+
+// Фетчь на получение информации обо мне
+export const getMyProfileInformation = () => {
     return fetch(`${config.baseUrl}/users/me`, {
         headers: config.headers
     })
-    .then(AnswerFromServer)
-    .then((result) => {
-        console.log(result);
-      });     
+    .then(AnswerFromServer)   
 };
 
-export const redactionMyProfileAvatar = (url) => {
-    return fetch(`${config.baseUrl}/users/me/avatar`, {
-        method: 'PATCH',
-        headers: config.headers,
-        body: JSON.stringify({
-            avatar: url
-        })
-    })
-    .then(AnswerFromServer)
-    // .then((result) => {
-    //     console.log(result);
-    //   });     
-};
-
-export const redactionMyProfileInputs = (profileName, profileJob) => {
+// Фетчь на редактирование моего профиля, name и about, это имя и занятие соответственно
+export const redactionMyProfileInformation = (profileName, profileJob) => {
     return fetch(`${config.baseUrl}/users/me`, {
         method: 'PATCH',
         headers: config.headers,
@@ -54,6 +44,19 @@ export const redactionMyProfileInputs = (profileName, profileJob) => {
     .then(AnswerFromServer)
 };
 
+// Фетчь на редактирование моего аватара, свойство avatar - это сслыка на новую аватарку
+export const redactionMyProfileAvatar = (url) => {
+    return fetch(`${config.baseUrl}/users/me/avatar`, {
+        method: 'PATCH',
+        headers: config.headers,
+        body: JSON.stringify({
+            avatar: url
+        })
+    })
+    .then(AnswerFromServer)
+};
+
+// Фетчь на получения карточек студентов
 export const getInitialCards = () => {
     return fetch(`${config.baseUrl}/cards`, {
         headers: config.headers
@@ -61,6 +64,7 @@ export const getInitialCards = () => {
     .then(AnswerFromServer)
 };
 
+// Фетчь на добавление картчоки на сервер, в свойства name и link передаем название и ссылку для карточки
 export const addCardOnServer = (cardName, cardLink) => {
     return fetch(`${config.baseUrl}/cards`, {
         method: 'POST',
@@ -73,22 +77,25 @@ export const addCardOnServer = (cardName, cardLink) => {
     .then(AnswerFromServer)
 };
 
+// Фетчь для счетчика лайков
 export const cardLike = (cardId) => {
     return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
         method: 'PUT',
         headers: config.headers
     })
     .then(AnswerFromServer)
-}
+};
 
+// Фетчь на снятие лайка с карточки
 export const cardUnlike = (cardId) => {
     return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
         method: 'DELETE',
         headers: config.headers
     })
     .then(AnswerFromServer)
-}
+};
 
+// Фетчь на удаление карточки
 export const cardDelete = (cardId) => {
     return fetch(`${config.baseUrl}/cards/${cardId}`, {
         method: 'DELETE',

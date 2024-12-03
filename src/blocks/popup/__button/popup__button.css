@@ -19,7 +19,14 @@
   cursor: pointer;
 }
 
-/* new css validation */
+@media screen and (max-width: 568px) {
+  .popup__button {
+    font-size: 14px;
+    line-height: 17px;
+  }
+}
+
+/* кнопка неактивна */
 .popup__button_disabled {
   cursor: default;
   pointer-events: none;
@@ -28,10 +35,3 @@
   border: 1px solid #000;
   opacity: 0.2;
 }  
-
-@media screen and (max-width: 568px) {
-  .popup__button {
-    font-size: 14px;
-    line-height: 17px;
-  }
-}
