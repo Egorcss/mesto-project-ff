@@ -135,6 +135,7 @@ formProfile.addEventListener('submit', handleProfileFormSubmit);
 function handleProfileFormSubmit(evt) {
     evt.preventDefault();
 
+    // По сабмиту текст меняется на 'Сохранение...'
     const buttonTextSubmitIsSaving = evt.currentTarget.querySelector('.popup__button');
     buttonTextSubmitIsSaving.textContent = 'Сохранение...';
 
@@ -149,7 +150,7 @@ function handleProfileFormSubmit(evt) {
         console.log(error.status, error.statusText)
     })
     .finally(() => {
-        buttonTextSubmitIsSaving.textContent = 'Сохранить'
+        buttonTextSubmitIsSaving.textContent = 'Сохранить' // Возвращаем как было по окончании
     });
 };
 
