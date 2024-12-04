@@ -81,6 +81,26 @@
     </div>
   </div>
 
+  <!-- Попап с аватаром -->
+  <div class="popup popup_type_avatar">
+    <div class="popup__content">
+      <button type="button" class="popup__close"></button>
+      <h3 class="popup__title">Обновить аватар</h3>
+      <form class="popup__form" name="form-avatar">
+        <input 
+          type="url" 
+          name="avatar"
+          class="popup__input popup__input_type_url-avatar" 
+          placeholder="Ссылка на картинку" 
+          id="input-url-avatar" 
+          required
+        > 
+        <span class="input-url-avatar-error popup__error"></span> 
+        <button type="submit" class="button popup__button">Сохранить</button>
+      </form>
+    </div>
+  </div>
+
   <!-- Попап с добавлением новой карточки на страницу -->
   <div class="popup popup_type_new-card popup_is-animated">
     <div class="popup__content">
@@ -127,25 +147,6 @@
   
 </div>
 
-<div class="popup popup_type_avatar">
-  <div class="popup__content">
-    <button type="button" class="popup__close"></button>
-    <h3 class="popup__title">Обновить аватар</h3>
-    <form class="popup__form" name="edit-avatar">
-      <input 
-        type="url" 
-        name="avatar"
-        class="popup__input popup__input_type_url-avatar" 
-        placeholder="Ссылка на картинку" 
-        id="input-avatar" 
-        required="" 
-      > 
-      <span class="input-avatar-error popup__error"></span> 
-      <button type="submit" class="button popup__button">Сохранить</button>
-    </form>
-  </div>
-</div>
-
 
 
 <!-- ТЕМПЛЕЙТ -->
@@ -155,11 +156,9 @@
     <button type="button" class="card__delete-button"></button>
     <div class="card__description">
       <h2 class="card__title"></h2>
-      <div class="card__like-wrapper">
+      <div class="card__likes">
         <button type="button" class="card__like-button"></button> 
-        <span
-          class="card__like-counter">
-        </span>
+        <span class="card__like-counter"></span>
       </div>
     </div>
   </li>

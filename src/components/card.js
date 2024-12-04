@@ -5,98 +5,105 @@ const cardTemplate = document.querySelector('#card-template').content;
 export function createCard(
     title, 
     link,
-    deleteCard, 
-    handleImageClick,
+    cardDelete, 
+    handleBigImageClick,
     counter,
     id,
     cardOwner,
     cardId,
-    likeCard,
-    unLikeCard,
+    cardLike,
+    cardUnlike,
     removeCardOnPage,
-    toggleLikeCard
-) {
+    toggleLikeCard) {
+        
     // В CardTemplate определен контент темлейта, теперь клонируем его содержимое и выбираем
     // селекторы с картинкой и заголовком карточки
     const newCard = cardTemplate.querySelector('.places__item').cloneNode(true);
     const newCardImage = newCard.querySelector('.card__image');
     const newCardTitle = newCard.querySelector('.card__title');
 
-    // В 1 аргументе card будет элемент массива initialCards и через этот аргумент работаем 
-    // со его свойствами(link и name)
     newCardTitle.textContent = title;
     newCardImage.src = link;
     newCardImage.alt = title;
+
+    // Открытие большого изображения через клик по картинке в карточке
+    newCardImage.addEventListener('click', () => {
+        handleBigImageClick(title, link);
+    });
+
+    // Счетчик лайков, исходя из количества пользователей, лайкнувших карточку
     newCard.querySelector('.card__like-counter').textContent = counter.length;
-    newCard.id = cardId;
     
-    // Кнопка "корзинка", по клику передается аргумент DeleteCard ей, переданный в функцию ранее
+    // Кнопка "корзинка"
     const buttonDelete = newCard.querySelector('.card__delete-button');
+
+    newCard.id = cardId;
+
+    // Если не моя карточка, то не будет кнопки удаления
     if (id !== cardOwner) {
         buttonDelete.remove();
     }
     else {
         buttonDelete.addEventListener('click', () => {
-            removeCardOnPage(deleteCard, cardId);
+            removeCardOnPage(cardDelete, cardId, newCard); // чтобы точно удалить нужную карточку
         });
     };
 
-    // Переключение лайка для карточки
+    // Лайк для карточки
     const buttonLikeCard = newCard.querySelector('.card__like-button');
-    const checkLikes = counter.some(function(item) {
-        return item._id === id;
+
+    const hasLikes = counter.some(function(like) {
+        return like._id === id; 
     });
 
-    if (checkLikes) {
-        buttonLikeCard.classList.add('card__like-button_is-active')
+    if (hasLikes) {
+        buttonLikeCard.classList.add('card__like-button_is-active');
     };
 
     buttonLikeCard.addEventListener('click', () => {
-        toggleLikeCard(buttonLikeCard, cardId, unLikeCard, likeCard);
-    });
-
-    // Открытие большого изображения через клик по картинке в карточке
-    newCardImage.addEventListener('click', () => {
-        handleImageClick(title, link);
+        toggleLikeCard(buttonLikeCard, cardId, cardUnlike, cardLike);
     });
 
     return newCard;
 }
 
 // @todo: Функция удаления карточки
-export function removeCardOnPage(deleteCard, cardId) {
+export function removeCardOnPage(deleteCard, cardId, newCard) {
     deleteCard(cardId)
     .then(() => {
-        document.querySelector(`.card[id="${cardId}"]`).remove();
+        newCard.remove();
     })
-    .catch(error => { // displaying any error if occurs
-        console.log('There was some error, please verify //', error)
+    .catch(error => { 
+        console.log(error.status, error.statusText)
     })
 };
 
 // @todo: Функция переключения лайка карточки 
-export function toggleLikeCard(likeButton, cardId, unLikeCard, likeCard) {
+export function toggleLikeCard(likeButton, cardId, cardUnlike, cardLike) {
 
-    const card = document.querySelector(`.card[id="${cardId}"]`);
-
+    const card = document.querySelector(`.places__item[id="${cardId}"]`);
+    const cardLikeCounter = card.querySelector('.card__like-counter');
+    
+    // Если кнопка-лайк содержит класс активной кнопки(card__like-button_is-active), то вызываем снятие лайка и уменьшаем счетчик
     if (likeButton.classList.contains('card__like-button_is-active')) {
-        unLikeCard(cardId)
+        cardUnlike(cardId)
         .then((data) => {
-            card.querySelector('.card__like-counter').textContent = data.likes.length;
             likeButton.classList.remove('card__like-button_is-active');
+            cardLikeCounter.textContent = data.likes.length; // длина массива лайков(количество лайкнувших карточку)
         })
         .catch((error) => {
-            console.log('There was some error, please verify //', error)
+            console.log(error.status, error.statusText)
         })
     }
+    // Иначе ставим лайк, если не содержит класс card__like-button_is-active
     else {
-        likeCard(cardId)
+        cardLike(cardId)
         .then((data) => {
-            card.querySelector('.card__like-counter').textContent = data.likes.length;
             likeButton.classList.add('card__like-button_is-active');
+            cardLikeCounter.textContent = data.likes.length;
         })
-        .catch(error => { // displaying any error if occurs
-            console.log('There was some error, please verify //', error)
+        .catch(error => { 
+            console.log(error.status, error.statusText)
         })
     }
 };

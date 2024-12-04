@@ -18,16 +18,15 @@
   opacity: 0.6;
 }
 
-/* New Css properties form like counter */
-.card__like-wrapper {
+/* гибкая обертка с лайками */
+.card__likes {
   display: flex;
   align-items: center;
   flex-direction: column;
   gap: 5px;
 }
 
+/* counter - т.е. счетчик лайков */
 .card__like-counter {
-  display: block;
   font-size: 12px;
-  color: black;
 }

@@ -9,62 +9,30 @@ const config = {
     }
 };
 
-// Универсальная функция чтобы вместо кучи писанины сразу вызывать функцию получения
-// результата с сервера и ее преображение в формат json(и возвращение через return)
-function AnswerFromServer(res) {
+// Универсальная функция - вместо кучи писанины вызываем функцию получения
+// результата с сервера. Если все хорошо, то преображаем в формат json(и возвращаем),
+// а также отклоняем если все плохо(reject)
+function answerFromServer(res) {
     if (res.ok) {
         return res.json();
     };
     return Promise.reject(res.status, res.statusText);
 };
 
-// editUserAvatar,
-// getUserInfo, 
-// updateUserInfo, 
-// getInitialCards, 
-// addCard, 
-// deleteCard, 
-// likeCard, 
-// unLikeCard 
-
-// redactionMyProfileAvatar
-// getMyPersonalInfo
-// redactionMyProfileInfo
-// getInitialCards
-// addCardOnServer
-// cardDelete
-// cardLike
-// cardUnlike
 
 
-// КУЧА ФЕТЧЕЙ
+// ФЕТЧИ
 
-export const editUserAvatar = (url) => {
-    return fetch(`${config.baseUrl}/users/me/avatar`, {
-        method: 'PATCH',
-        headers: config.headers,
-        body: JSON.stringify({
-            avatar: url
-        })
-    })
-    .then(AnswerFromServer)
-    // .then((result) => {
-    //     console.log(result);
-    //   });     
-};
-
-export const getUserInfo = () => {
+// Фетчь на получение информации обо мне
+export const getMyProfileInformation = () => {
     return fetch(`${config.baseUrl}/users/me`, {
         headers: config.headers
     })
-    .then(AnswerFromServer)
-    // .then((result) => {
-    //     console.log(result);
-    //   });     
+    .then(answerFromServer)   
 };
 
-
-export const updateUserInfo = (profileName, profileJob) => {
+// Фетчь на редактирование моего профиля, name и about, это имя и занятие соответственно
+export const redactionMyProfileInformation = (profileName, profileJob) => {
     return fetch(`${config.baseUrl}/users/me`, {
         method: 'PATCH',
         headers: config.headers,
@@ -73,17 +41,31 @@ export const updateUserInfo = (profileName, profileJob) => {
             about: profileJob    
         })
     })
-    .then(AnswerFromServer)
+    .then(answerFromServer)
 };
 
+// Фетчь на редактирование моего аватара, свойство avatar - это сслыка на новую аватарку
+export const redactionMyProfileAvatar = (url) => {
+    return fetch(`${config.baseUrl}/users/me/avatar`, {
+        method: 'PATCH',
+        headers: config.headers,
+        body: JSON.stringify({
+            avatar: url
+        })
+    })
+    .then(answerFromServer)
+};
+
+// Фетчь на получения карточек студентов
 export const getInitialCards = () => {
     return fetch(`${config.baseUrl}/cards`, {
         headers: config.headers
     })
-    .then(AnswerFromServer)
+    .then(answerFromServer)
 };
 
-export const addCard = (cardName, cardLink) => {
+// Фетчь на добавление картчоки на сервер, в свойства name и link передаем название и ссылку для карточки
+export const addCardOnServer = (cardName, cardLink) => {
     return fetch(`${config.baseUrl}/cards`, {
         method: 'POST',
         headers: config.headers,
@@ -92,29 +74,32 @@ export const addCard = (cardName, cardLink) => {
             link: cardLink    
         })
     })
-    .then(AnswerFromServer)
+    .then(answerFromServer)
 };
 
-export const deleteCard = (cardId) => {
-    return fetch(`${config.baseUrl}/cards/${cardId}`, {
-        method: 'DELETE',
-        headers: config.headers
-    })
-    .then(AnswerFromServer)
-};
-
-export const likeCard = (cardId) => {
+// Фетчь для счетчика лайков
+export const cardLike = (cardId) => {
     return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
         method: 'PUT',
         headers: config.headers
     })
-    .then(AnswerFromServer)
-}
+    .then(answerFromServer)
+};
 
-export const unLikeCard = (cardId) => {
+// Фетчь на снятие лайка с карточки
+export const cardUnlike = (cardId) => {
     return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
         method: 'DELETE',
         headers: config.headers
     })
-    .then(AnswerFromServer)
-}
+    .then(answerFromServer)
+};
+
+// Фетчь на удаление карточки
+export const cardDelete = (cardId) => {
+    return fetch(`${config.baseUrl}/cards/${cardId}`, {
+        method: 'DELETE',
+        headers: config.headers
+    })
+    .then(answerFromServer)
+};
